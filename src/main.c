@@ -30,7 +30,7 @@ extern char *ft_strcpy(char *dst, char *src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
-extern int ft_atoi_base(char *str, char *base);
+extern int ft_atoi_base(const char *str, const char *base);
 
 void check_atoi_base() {
     printf("Test 1: %d\n", ft_atoi_base("101", "01"));      // binaire → 5

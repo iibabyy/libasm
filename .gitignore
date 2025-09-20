@@ -2,3 +2,4 @@ libasm.a
 .objs
 program
 cprogram
+# .vscode

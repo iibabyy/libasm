@@ -59,7 +59,7 @@ $(EXECUTABLE): $(MAIN_FILE) $(LIBASM)
 
 # C program
 $(C_EXECUTABLE): $(C_MAIN_FILE) $(LIBASM)
-	cc $(C_MAIN_FILE) -L. -lasm -o $(C_EXECUTABLE)
+	cc $(C_MAIN_FILE) -L. -lasm -g3 -o $(C_EXECUTABLE)
 
 # Library
 $(LIBASM): $(OBJS)
