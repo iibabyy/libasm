@@ -10,13 +10,16 @@ void check_strcpy();
 void check_strcmp();
 void check_write();
 void check_read();
+void check_strdup();
 
 int main() {
     // check_strlen();
     // check_strcpy();
     // check_strcmp();
     // check_write();
-    check_read();
+    // check_read();
+    check_strdup();
+
 
 	return 0;
 }
@@ -198,4 +201,50 @@ void check_read() {
     } else {
         printf("❌ FAIL: read from invalid fd → returned %zd\n", ret);
     }
+}
+
+void test_strdup(const char *input) {
+    char *libc_copy = strdup(input);
+    char *ft_copy = strdup(input); // replace with your assembly strdup if needed
+
+    // If you want to use your assembly version:
+    // char *ft_copy = strdup(input); 
+
+    if (!libc_copy || !ft_copy) {
+        printf("❌ FAIL: strdup returned NULL for input \"%s\"\n", input);
+        free(libc_copy);
+        free(ft_copy);
+        return;
+    }
+
+    if (strcmp(libc_copy, ft_copy) == 0) {
+        printf("✅ PASS: strdup(\"%s\") → \"%s\"\n", input, ft_copy);
+    } else {
+        printf("❌ FAIL: strdup(\"%s\") → got \"%s\", expected \"%s\"\n",
+               input, ft_copy, libc_copy);
+    }
+
+    free(libc_copy);
+    free(ft_copy);
+}
+
+void check_strdup() {
+    test_strdup("");                        // empty string
+    test_strdup("a");                       // single char
+    test_strdup("Hello");                   // normal word
+    test_strdup("Hello, world!");           // punctuation
+    test_strdup("1234567890");              // numbers
+    test_strdup("foo\0bar");                // embedded null (only "foo" should copy)
+    test_strdup("This is a longer string for testing purposes.");  
+
+    // Large string
+    char *big = malloc(1024);
+    if (!big) {
+        perror("malloc");
+        return;
+    }
+    memset(big, 'X', 1023);
+    big[1023] = '\0';
+    test_strdup(big);
+    free(big);
 }
