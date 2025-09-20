@@ -1,3 +1,4 @@
+libasm.a
 .objs
 program
 cprogram
