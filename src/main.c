@@ -1,11 +1,28 @@
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+
+void check_strlen();
+void check_strcpy();
+void check_strcmp();
+void check_write();
+
+int main() {
+    // check_strlen();
+    // check_strcpy();
+    // check_strcmp();
+    // check_write();
+
+	return 0;
+}
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
 extern int ft_strcmp(const char *s1, const char *s2);
+extern ssize_t ft_write(int fd, const void *buf, size_t count);
 
 void test_strlen(char *input) {
     int expected = strlen(input);
@@ -103,10 +120,30 @@ void check_strcmp() {
     free(big2);
 }
 
-int main() {
-    // check_strlen();
-    // check_strcpy();
-    check_strcmp();
+void test_write(int fd, const char *msg) {
+    ssize_t expected = write(fd, msg, strlen(msg));
+    ssize_t got = ft_write(fd, msg, strlen(msg)); // your version
 
-	return 0;
+    if (expected == got) {
+        printf("✅ PASS: wrote \"%s\" (%zd bytes)\n", msg, got);
+    } else {
+        printf("❌ FAIL: \"%s\" → got %zd, expected %zd (errno=%d)\n",
+               msg, got, expected, errno);
+    }
+}
+
+void check_write() {
+    test_write(1, "Hello, world!\n");
+    test_write(1, "Test with numbers: 1234567890\n");
+    test_write(1, "Edge case: empty string\n");
+    test_write(1, "String with\0embedded nulls?\n");
+    
+    // Error case: invalid fd
+    const char *err = "This should fail\n";
+    ssize_t ret = ft_write(-1, err, strlen(err));
+    if (ret == -1) {
+        printf("✅ PASS: write to invalid fd returned -1 (errno=%d)\n", errno);
+    } else {
+        printf("❌ FAIL: write to invalid fd → returned %zd\n", ret);
+    }
 }
