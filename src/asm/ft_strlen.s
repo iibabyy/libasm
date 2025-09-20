@@ -1,6 +1,7 @@
     section .text
 	global ft_strlen
 
+; rdi: char *str
 ft_strlen:
     mov rax, 0
 .loop:
