@@ -5,6 +5,7 @@
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
+extern int ft_strcmp(const char *s1, const char *s2);
 
 void test_strlen(char *input) {
     int expected = strlen(input);
@@ -60,9 +61,52 @@ void check_strcpy() {
     test_strcpy(big);
 }
 
+void test_strcmp(const char *s1, const char *s2) {
+    int expected = strcmp(s1, s2);
+    int got = ft_strcmp(s1, s2);
+
+    if ((expected == 0 && got == 0) || (expected < 0 && got < 0) || (expected > 0 && got > 0)) {
+        printf("✅ PASS: \"%s\" vs \"%s\" → %d\n", s1, s2, got);
+    } else {
+        printf("❌ FAIL: \"%s\" vs \"%s\" → got %d, expected %d\n", s1, s2, got, expected);
+    }
+}
+
+void check_strcmp() {
+        // Equal strings
+    test_strcmp("", "");
+    test_strcmp("a", "a");
+    test_strcmp("Hello", "Hello");
+
+    // s1 < s2
+    test_strcmp("Hello", "World");
+    test_strcmp("abc", "abd");
+
+    // s1 > s2
+    test_strcmp("World", "Hello");
+    test_strcmp("abd", "abc");
+
+    // Different lengths
+    test_strcmp("foo", "foobar");
+    test_strcmp("foobar", "foo");
+
+    // Embedded null character
+    test_strcmp("foo\0bar", "foo\0baz");
+
+    // Large strings
+    char *big1 = malloc(1024);
+    char *big2 = malloc(1024);
+    memset(big1, 'A', 1023); big1[1023] = '\0';
+    memset(big2, 'A', 1022); big2[1022] = 'B'; big2[1023] = '\0';
+    test_strcmp(big1, big2);
+    free(big1);
+    free(big2);
+}
+
 int main() {
-    check_strlen();
-    check_strcpy();
+    // check_strlen();
+    // check_strcpy();
+    check_strcmp();
 
 	return 0;
 }
