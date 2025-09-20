@@ -9,8 +9,8 @@ OBJS_DIR = $(SRCS_DIR)/.objs
 MAIN_FILE = $(SRCS_DIR)/main.s
 EXECUTABLE = program
 
-CPP_MAIN_FILE = $(SRCS_DIR)/main.cpp
-CPP_EXECUTABLE = cpp_program
+C_MAIN_FILE = $(SRCS_DIR)/main.c
+C_EXECUTABLE = cprogram
 
 ASM_SRCS = $(addprefix $(ASM_DIR)/, ft_strlen.s ft_strcpy.s)
 
@@ -18,15 +18,15 @@ OBJS = $(ASM_SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
 
 all: $(LIBASM)
 asm: $(EXECUTABLE)
-cpp: $(CPP_EXECUTABLE)
+c: $(C_EXECUTABLE)
 
 $(EXECUTABLE): $(MAIN_FILE) $(LIBASM)
 	$(NASM) $(MAIN_FILE) -o $(OBJS_DIR)/$(EXECUTABLE).o
 	ld $(OBJS_DIR)/$(EXECUTABLE).o $(LIBASM) -o $(EXECUTABLE)
 	@rm $(EXECUTABLE)_tmp
 
-$(CPP_EXECUTABLE): $(CPP_MAIN_FILE) $(LIBASM)
-	c++ $(CPP_MAIN_FILE) -L. -lasm -o $(CPP_EXECUTABLE)
+$(C_EXECUTABLE): $(C_MAIN_FILE) $(LIBASM)
+	cc $(C_MAIN_FILE) -L. -lasm -o $(C_EXECUTABLE)
 
 $(LIBASM): $(OBJS)
 	ar rcs $(LIBASM) $(OBJS)
@@ -41,7 +41,7 @@ clean:
 fclean: clean
 	rm -f $(LIBASM)
 	rm -f $(EXECUTABLE)
-	rm -f $(CPP_EXECUTABLE)
+	rm -f $(C_EXECUTABLE)
 
 re: fclean all
 
