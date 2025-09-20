@@ -3,25 +3,26 @@
 
 ft_strcmp:
     mov rax, 0
+    mov r8d, 0
+    mov r9d, 0
 .loop:
+	mov r8b, [rdi + rax] ; str1[i]
+	mov r9b, [rsi + rax] ; str2[i]
 
-	; str2[i] != '\0'
-	; mov cl, [rsi + rax]
-    cmp BYTE [rdi + rax], 0
+	; str1[i] == '\0' -> break
+    cmp r8b, 0
     je .break
 
-	; str1[i] != '\0'
-	; mov cl, [rsi + rax]
-    cmp BYTE [rsi + rax], 0
-    je .break
+	; str1[i] != str2[i] -> break
+    cmp r8b, r9b
+    jne .break
 
-	mov bl, [rsi + rax]
-	mov [rdi + rax], bl
     inc rax
     jmp .loop
 .break:
-	mov rdi, [rdi + rax]
-	mov rax, [rsi + rax]
-	sub rax, rdi
+	sub r8d, r9d
+
+	xor rax, rax
+	mov eax, r8d
 
     ret
