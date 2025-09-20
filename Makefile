@@ -1,5 +1,5 @@
-NASM = nasm -felf64
-
+NASM = nasm
+NASM_FLAGS = -felf64
 LIBASM = libasm.a
 
 SRCS_DIR = src
@@ -12,40 +12,75 @@ EXECUTABLE = program
 C_MAIN_FILE = $(SRCS_DIR)/main.c
 C_EXECUTABLE = cprogram
 
-ASM_SRCS = $(addprefix $(ASM_DIR)/, \
-	ft_strlen.s ft_strcpy.s ft_strcmp.s ft_write.s \
-	ft_read.s ft_strdup.s \
-)
+# ASM sources
+SRCS = \
+$(addprefix $(ASM_DIR)/ft_, \
+$(addsuffix .s, \
+	strlen strcpy strcmp write read strdup \
+))
 
-OBJS = $(ASM_SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
+BONUS_SRCS = \
+$(addprefix $(ASM_DIR)/ft_, \
+$(addsuffix .s, \
+	atoi_base \
+))
 
-all: $(LIBASM)
+# Detect debug flag
+ifneq (,$(filter debug,$(MAKECMDGOALS)))
+	NASM_FLAGS += -g
+endif
+
+# Detect bonus flag
+ifneq (,$(filter bonus,$(MAKECMDGOALS)))
+	SRCS += $(BONUS_SRCS)
+endif
+
+# Remove debug/bonus from goals so Make doesn't try to build them as targets
+REAL_GOALS := $(filter-out debug bonus,$(MAKECMDGOALS))
+ifeq ($(REAL_GOALS),)
+	REAL_GOALS := all
+endif
+
+# Objects
+OBJS := $(SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
+BONUS_OBJS := $(BONUS_SRCS:$(ASM_BONUS_DIR)/%.s=$(OBJS_DIR)/bonus/%.o)
+
+# Targets
+all: $(LIBASM) $(EXECUTABLE)
+
 asm: $(EXECUTABLE)
 c: $(C_EXECUTABLE)
 
+# Main program
 $(EXECUTABLE): $(MAIN_FILE) $(LIBASM)
-	$(NASM) $(MAIN_FILE) -o $(OBJS_DIR)/$(EXECUTABLE).o
+	mkdir -p $(OBJS_DIR)
+	$(NASM) $(NASM_FLAGS) $< -o $(OBJS_DIR)/$(EXECUTABLE).o
 	ld $(OBJS_DIR)/$(EXECUTABLE).o $(LIBASM) -o $(EXECUTABLE)
-	@rm $(EXECUTABLE)_tmp
 
+# C program
 $(C_EXECUTABLE): $(C_MAIN_FILE) $(LIBASM)
 	cc $(C_MAIN_FILE) -L. -lasm -o $(C_EXECUTABLE)
 
+# Library
 $(LIBASM): $(OBJS)
-	ar rcs $(LIBASM) $(OBJS)
+	ar rcs $(LIBASM) $^
 
+# Generic rules
 $(OBJS_DIR)/%.o : $(ASM_DIR)/%.s
 	mkdir -p $(OBJS_DIR)
-	$(NASM) $< -o $@
+	$(NASM) $(NASM_FLAGS) $< -o $@
 
+$(OBJS_DIR)/bonus/%.o : $(ASM_BONUS_DIR)/%.s
+	mkdir -p $(OBJS_DIR)/bonus
+	$(NASM) $(NASM_FLAGS) $< -o $@
+
+# Clean
 clean:
 	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	rm -f $(LIBASM)
-	rm -f $(EXECUTABLE)
-	rm -f $(C_EXECUTABLE)
+	rm -f $(LIBASM) $(EXECUTABLE) $(C_EXECUTABLE)
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re debug bonus asm c

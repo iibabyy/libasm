@@ -11,6 +11,7 @@ void check_strcmp();
 void check_write();
 void check_read();
 void check_strdup();
+void check_atoi_base();
 
 int main() {
     // check_strlen();
@@ -18,8 +19,8 @@ int main() {
     // check_strcmp();
     // check_write();
     // check_read();
-    check_strdup();
-
+    // check_strdup();
+    check_atoi_base();
 
 	return 0;
 }
@@ -29,6 +30,15 @@ extern char *ft_strcpy(char *dst, char *src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
+extern int ft_atoi_base(char *str, char *base);
+
+void check_atoi_base() {
+    printf("Test 1: %d\n", ft_atoi_base("101", "01"));      // binaire → 5
+    printf("Test 2: %d\n", ft_atoi_base("1A", "0123456789ABCDEF")); // hex → 26
+    printf("Test 3: %d\n", ft_atoi_base("777", "01234567")); // octal → 511
+    printf("Test 4: %d\n", ft_atoi_base("42", "0123456789")); // décimal → 42
+    printf("Test invalid base: %d\n", ft_atoi_base("123", "0")); // base trop petite → 0
+}
 
 void test_strlen(char *input) {
     int expected = strlen(input);
