@@ -12,7 +12,10 @@ EXECUTABLE = program
 C_MAIN_FILE = $(SRCS_DIR)/main.c
 C_EXECUTABLE = cprogram
 
-ASM_SRCS = $(addprefix $(ASM_DIR)/, ft_strlen.s ft_strcpy.s ft_strcmp.s ft_write.s )
+ASM_SRCS = $(addprefix $(ASM_DIR)/, \
+	ft_strlen.s ft_strcpy.s ft_strcmp.s ft_write.s \
+	ft_read.s \
+)
 
 OBJS = $(ASM_SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
 

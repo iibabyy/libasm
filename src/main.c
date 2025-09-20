@@ -9,12 +9,14 @@ void check_strlen();
 void check_strcpy();
 void check_strcmp();
 void check_write();
+void check_read();
 
 int main() {
     // check_strlen();
     // check_strcpy();
     // check_strcmp();
     // check_write();
+    check_read();
 
 	return 0;
 }
@@ -23,6 +25,7 @@ extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
+extern ssize_t ft_read(int fd, void *buf, size_t count);
 
 void test_strlen(char *input) {
     int expected = strlen(input);
@@ -145,5 +148,54 @@ void check_write() {
         printf("✅ PASS: write to invalid fd returned -1 (errno=%d)\n", errno);
     } else {
         printf("❌ FAIL: write to invalid fd → returned %zd\n", ret);
+    }
+}
+void test_read(const char *data) {
+    char buf1[1024];
+    char buf2[1024];
+
+    // Create a temporary file with the test data
+    FILE *tmp = tmpfile();
+    if (!tmp) {
+        perror("tmpfile");
+        return;
+    }
+    fwrite(data, 1, strlen(data), tmp);
+    rewind(tmp);
+
+    int fd = fileno(tmp);
+
+    // Run libc read for comparison
+    ssize_t expected = read(fd, buf1, sizeof(buf1));
+    
+    // Rewind again to read from the start using your assembly version
+    rewind(tmp);
+    ssize_t got = ft_read(fd, buf2, sizeof(buf2)); // <-- use ft_read here
+
+    if (expected == got && memcmp(buf1, buf2, expected) == 0) {
+        printf("✅ PASS: read \"%s\" (%zd bytes)\n", data, got);
+    } else {
+        printf("❌ FAIL: read \"%s\" → got %zd (\"%.*s\"), expected %zd (\"%.*s\") errno=%d\n",
+               data, got, (int)got, buf2, expected, (int)expected, buf1, errno);
+    }
+
+    fclose(tmp);
+}
+
+void check_read() {
+    test_read("");                        // empty file
+    test_read("a");                       // single char
+    test_read("Hello");                   // small word
+    test_read("Hello, world!\n");         // sentence
+    test_read("1234567890");              // numbers
+    test_read("This is a longer string for testing purposes.");
+
+    // Error case: invalid fd
+    char buf[16];
+    ssize_t ret = ft_read(-1, buf, sizeof(buf));
+    if (ret == -1) {
+        printf("✅ PASS: read from invalid fd returned -1 (errno=%d)\n", errno);
+    } else {
+        printf("❌ FAIL: read from invalid fd → returned %zd\n", ret);
     }
 }
