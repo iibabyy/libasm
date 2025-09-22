@@ -34,7 +34,7 @@ extern int ft_atoi_base(const char *str, const char *base);
 
 void check_atoi_base() {
     printf("Test 1: %d\n", ft_atoi_base("101", "01"));      // binaire → 5
-    printf("Test 2: %d\n", ft_atoi_base("1A", "0123456789ABCDEF")); // hex → 26
+    printf("Test 2: %d\n", ft_atoi_base("-1A", "0123456789ABCDEF")); // hex → 26
     printf("Test 3: %d\n", ft_atoi_base("777", "01234567")); // octal → 511
     printf("Test 4: %d\n", ft_atoi_base("42", "0123456789")); // décimal → 42
     printf("Test invalid base: %d\n", ft_atoi_base("123", "0")); // base trop petite → 0

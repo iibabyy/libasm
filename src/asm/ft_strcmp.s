@@ -1,5 +1,5 @@
+global ft_strcmp
     section .text
-	global ft_strcmp
 
 ft_strcmp:
     mov rax, 0

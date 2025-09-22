@@ -1,7 +1,7 @@
 extern __errno_location
+global ft_read
 
 	section .text
-	global ft_read
 
 ft_read:
 	; arg[0] == rdi == int fd 
@@ -21,10 +21,11 @@ ft_read:
     ret
 
 .set_error:
+	mov r10, __errno_location
 	neg rax
 	mov rdi, rax
 
-	call __errno_location
+	call r10
 	mov [rax], edi
 	mov rax, -1
 	ret

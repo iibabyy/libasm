@@ -46,7 +46,7 @@ OBJS := $(SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
 BONUS_OBJS := $(BONUS_SRCS:$(ASM_BONUS_DIR)/%.s=$(OBJS_DIR)/bonus/%.o)
 
 # Targets
-all: $(LIBASM) $(EXECUTABLE)
+all: $(LIBASM)
 
 asm: $(EXECUTABLE)
 c: $(C_EXECUTABLE)
@@ -67,12 +67,12 @@ $(LIBASM): $(OBJS)
 
 # Generic rules
 $(OBJS_DIR)/%.o : $(ASM_DIR)/%.s
-	mkdir -p $(OBJS_DIR)
-	$(NASM) $(NASM_FLAGS) $< -o $@
+	@mkdir -p $(OBJS_DIR)
+	@$(NASM) $(NASM_FLAGS) $< -o $@
 
 $(OBJS_DIR)/bonus/%.o : $(ASM_BONUS_DIR)/%.s
-	mkdir -p $(OBJS_DIR)/bonus
-	$(NASM) $(NASM_FLAGS) $< -o $@
+	@mkdir -p $(OBJS_DIR)/bonus
+	@$(NASM) $(NASM_FLAGS) $< -o $@
 
 # Clean
 clean:
