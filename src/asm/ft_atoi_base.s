@@ -80,7 +80,8 @@ section .data
     str_ptr     dq 0            ; stores input string pointer (rdi)
     base_ptr    dq 0            ; stores base string pointer (rsi)
     base_len    dd 0            ; stores length of base string
-	sign		db 1
+	result		dq 1            ; stores the conversion result
+	sign		db 1            ; stores the result sign
 section .bss
     check_duplicate_array resb 256   ; table for checking duplicate base chars
                                      ; index = ASCII code, value = occurrence count
@@ -107,7 +108,12 @@ ft_atoi_base:
     call check_base
 	jump_if_less_than eax, 0, return_err
 
-	mov eax, [rel sign]
+    mov rax, 1
+    jump_if_negative byte [rel sign], negative_sign
+    ret
+
+negative_sign:
+    neg rax
     ret
 ;-----;
 
@@ -117,6 +123,9 @@ init_base:
 	; rdi = str
 	; rsi = base
     mov qword [rel base_ptr], rsi  ; base_ptr = rsi (base string)
+
+    ; sign = 1
+    mov byte [rel sign], 1
 
 	dec rdi
 init_base.skip_whitespace_loop:
@@ -134,11 +143,15 @@ init_base.check_sign:
 init_base.end:
 
     mov qword [rel str_ptr], rdi   ; str_ptr = rdi (input string)
+
 	; bzero check_duplicate_array
 	lea rdi, [rel check_duplicate_array]
     mov rcx, 256
     xor rax, rax
     rep stosb
+
+    ; result = 1
+    mov dword [rel result], 1
 
     ; compute base length using ft_strlen(base)
     mov rdi, rsi
