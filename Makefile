@@ -9,7 +9,7 @@ OBJS_DIR = $(SRCS_DIR)/.objs
 MAIN_FILE = $(SRCS_DIR)/main.s
 EXECUTABLE = program
 
-C_MAIN_FILE = $(SRCS_DIR)/main.c
+C_MAIN_FILES = $(SRCS_DIR)/main.c $(SRCS_DIR)/tests.c
 C_EXECUTABLE = cprogram
 
 # ASM sources
@@ -58,8 +58,8 @@ $(EXECUTABLE): $(MAIN_FILE) $(LIBASM)
 	ld $(OBJS_DIR)/$(EXECUTABLE).o $(LIBASM) -o $(EXECUTABLE)
 
 # C program
-$(C_EXECUTABLE): $(C_MAIN_FILE) $(LIBASM)
-	cc $(C_MAIN_FILE) -L. -lasm -g3 -o $(C_EXECUTABLE)
+$(C_EXECUTABLE): $(C_MAIN_FILES) $(LIBASM)
+	cc $(C_MAIN_FILES) -L. -lasm -g3 -o $(C_EXECUTABLE)
 
 # Library
 $(LIBASM): $(OBJS)
