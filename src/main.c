@@ -32,12 +32,53 @@ extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
 
+void test_atoi_base(const char *str, const char *base, int expected) {
+    int got = ft_atoi_base(str, base);
+
+    if (got == expected) {
+        printf("✅ PASS: ft_atoi_base(\"%s\", \"%s\") = %d\n", str, base, got);
+    } else {
+        printf("❌ FAIL: ft_atoi_base(\"%s\", \"%s\") = %d (expected %d)\n",
+               str, base, got, expected);
+    }
+}
+
 void check_atoi_base() {
-    printf("Test 1: %d\n", ft_atoi_base("101", "01"));      // binaire → 5
-    printf("Test 2: %d\n", ft_atoi_base("--1A", "0123456789ABCDEF")); // hex → 26
-    printf("Test 3: %d\n", ft_atoi_base("---+++-+777", "01234567")); // octal → 511
-    printf("Test 4: %d\n", ft_atoi_base("42", "0123456789")); // décimal → 42
-    printf("Test invalid base: %d\n", ft_atoi_base("123", "0")); // base trop petite → 0
+    printf("\n=== Tests ft_atoi_base ===\n");
+
+    // --- Bases invalides ---
+    test_atoi_base("123", "", 0);           // base vide → invalide
+    test_atoi_base("123", "1", 0);          // base taille 1 → invalide
+    test_atoi_base("123", "112345", 0);     // doublon → invalide
+    test_atoi_base("123", " 0123456789", 0);// espace dans la base → invalide
+    test_atoi_base("123", "+0123456789", 0);// '+' dans la base → invalide
+    test_atoi_base("123", "-0123456789", 0);// '-' dans la base → invalide
+
+    // --- Base décimale ---
+    test_atoi_base("42", "0123456789", 42);
+    test_atoi_base("   42", "0123456789", 42);  // espaces devant
+    test_atoi_base("+42", "0123456789", 42);
+    test_atoi_base("-42", "0123456789", -42);
+    test_atoi_base("0", "0123456789", 0);
+    test_atoi_base("123abc", "0123456789", 123); // stop à 'a'
+
+    // --- Base binaire ---
+    test_atoi_base("101", "01", 5);
+    test_atoi_base("-101", "01", -5);
+
+    // --- Base hexadécimale ---
+    test_atoi_base("1A", "0123456789ABCDEF", 26);
+    test_atoi_base("ff", "0123456789abcdef", 255);
+    test_atoi_base("-ff", "0123456789abcdef", -255);
+
+    // --- Base octale ---
+    test_atoi_base("77", "01234567", 63);
+
+    // --- Base personnalisée ---
+    test_atoi_base("abba", "ab", 15);   // "abba" en base2 → 1111
+    test_atoi_base("cab", "abc", 21);   // "cab" en base3 → (2*9 + 0*3 + 1)
+
+    printf("=== Fin des tests ft_atoi_base ===\n\n");
 }
 
 void test_strlen(char *input) {
@@ -50,15 +91,25 @@ void test_strlen(char *input) {
         printf("❌ FAIL: \"%s\" → got %d, expected %d\n", input, got, expected);
     }
 }
-
 void check_strlen() {
-	test_strlen("");                   // empty string
+    printf("\n=== Tests ft_strlen ===\n");
+
+    test_strlen("");                   // empty string
     test_strlen("a");                  // single char
     test_strlen("Hello");              // normal word
     test_strlen("Hello, world!");      // punctuation
     test_strlen("1234567890");         // numbers
     test_strlen("foo\0bar");           // string with embedded null
     test_strlen("This is a longer string for testing.");  
+
+    // Edge case: very large string
+    char *big = malloc(5000);
+    memset(big, 'X', 4999);
+    big[4999] = '\0';
+    test_strlen(big);
+    free(big);
+
+    printf("=== Fin des tests ft_strlen ===\n\n");
 }
 
 void test_strcpy(const char *input) {
@@ -76,9 +127,10 @@ void test_strcpy(const char *input) {
                input, buf2, buf1);
     }
 }
-
 void check_strcpy() {
-    char    big[1024];
+    printf("\n=== Tests ft_strcpy ===\n");
+
+    char big[1024];
 
     test_strcpy("");                        // empty string
     test_strcpy("a");                       // single char
@@ -92,6 +144,12 @@ void check_strcpy() {
     memset(big, 'X', 1023);
     big[1023] = '\0';
     test_strcpy(big);
+
+    // Edge case: copy into uninitialized buffer (safety check)
+    char buf[1];
+    test_strcpy("X");
+
+    printf("=== Fin des tests ft_strcpy ===\n\n");
 }
 
 void test_strcmp(const char *s1, const char *s2) {
@@ -104,9 +162,10 @@ void test_strcmp(const char *s1, const char *s2) {
         printf("❌ FAIL: \"%s\" vs \"%s\" → got %d, expected %d\n", s1, s2, got, expected);
     }
 }
-
 void check_strcmp() {
-        // Equal strings
+    printf("\n=== Tests ft_strcmp ===\n");
+
+    // Equal strings
     test_strcmp("", "");
     test_strcmp("a", "a");
     test_strcmp("Hello", "Hello");
@@ -132,8 +191,14 @@ void check_strcmp() {
     memset(big1, 'A', 1023); big1[1023] = '\0';
     memset(big2, 'A', 1022); big2[1022] = 'B'; big2[1023] = '\0';
     test_strcmp(big1, big2);
+
+    // Edge case: completely different first chars
+    test_strcmp("Zebra", "Apple");
+
     free(big1);
     free(big2);
+
+    printf("=== Fin des tests ft_strcmp ===\n\n");
 }
 
 void test_write(int fd, const char *msg) {
@@ -149,6 +214,8 @@ void test_write(int fd, const char *msg) {
 }
 
 void check_write() {
+    printf("\n=== Tests ft_write ===\n");
+
     test_write(1, "Hello, world!\n");
     test_write(1, "Test with numbers: 1234567890\n");
     test_write(1, "Edge case: empty string\n");
@@ -162,7 +229,10 @@ void check_write() {
     } else {
         printf("❌ FAIL: write to invalid fd → returned %zd\n", ret);
     }
+
+    printf("=== Fin des tests ft_write ===\n\n");
 }
+
 void test_read(const char *data) {
     char buf1[1024];
     char buf2[1024];
@@ -194,8 +264,9 @@ void test_read(const char *data) {
 
     fclose(tmp);
 }
-
 void check_read() {
+    printf("\n=== Tests ft_read ===\n");
+
     test_read("");                        // empty file
     test_read("a");                       // single char
     test_read("Hello");                   // small word
@@ -211,6 +282,18 @@ void check_read() {
     } else {
         printf("❌ FAIL: read from invalid fd → returned %zd\n", ret);
     }
+
+    // Edge case: read zero bytes
+    int fd = open("/dev/null", O_RDONLY);
+    ret = ft_read(fd, buf, 0);
+    if (ret == 0) {
+        printf("✅ PASS: read zero bytes returned 0\n");
+    } else {
+        printf("❌ FAIL: read zero bytes → returned %zd\n", ret);
+    }
+    close(fd);
+
+    printf("=== Fin des tests ft_read ===\n\n");
 }
 
 void test_strdup(const char *input) {
@@ -237,8 +320,9 @@ void test_strdup(const char *input) {
     free(libc_copy);
     free(ft_copy);
 }
-
 void check_strdup() {
+    printf("\n=== Tests ft_strdup ===\n");
+
     test_strdup("");                        // empty string
     test_strdup("a");                       // single char
     test_strdup("Hello");                   // normal word
@@ -257,4 +341,9 @@ void check_strdup() {
     big[1023] = '\0';
     test_strdup(big);
     free(big);
+
+    // Edge case: duplicate single whitespace
+    test_strdup(" ");
+
+    printf("=== Fin des tests ft_strdup ===\n\n");
 }
