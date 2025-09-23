@@ -21,6 +21,7 @@ void test_strdup(const char *input);
 void test_create_elem(const char *input);
 void test_lst_add_front(t_list *first, t_list *second);
 void test_list_push_front(const char *label, t_list **begin_list, const char *data);
+void test_list_size(const char *label, t_list *list, int expected);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
@@ -40,6 +41,7 @@ void check_create_elem();
 void check_lst_add_front();
 void check_lst_add_front();
 void check_list_push_front();
+void check_list_size();
 
 int main() {
     check_strlen();
@@ -52,8 +54,46 @@ int main() {
     check_create_elem();
     check_lst_add_front();
     check_list_push_front();
+    check_list_size();
 
 	return 0;
+}
+
+void check_list_size() {
+    printf("\n=== Tests ft_list_size ===\n");
+
+    // Empty list
+    test_list_size("Empty list", NULL, 0);
+
+    // List with 1 element
+    t_list *n1 = ft_create_elem("one");
+    test_list_size("One element", n1, 1);
+
+    // List with 2 elements
+    t_list *n2 = ft_create_elem("two");
+    n2->next = n1;
+    test_list_size("Two elements", n2, 2);
+
+    // List with 3 elements
+    t_list *n3 = ft_create_elem("three");
+    n3->next = n2;
+    test_list_size("Three elements", n3, 3);
+
+    // Longer list (5 elements)
+    t_list *n4 = ft_create_elem("four");
+    t_list *n5 = ft_create_elem("five");
+    n4->next = n3;
+    n5->next = n4;
+    test_list_size("Five elements", n5, 5);
+
+    // Cleanup
+    free(n1);
+    free(n2);
+    free(n3);
+    free(n4);
+    free(n5);
+
+    printf("=== Fin des tests ft_list_size ===\n\n");
 }
 
 void check_list_push_front() {

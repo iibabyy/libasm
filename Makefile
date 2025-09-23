@@ -19,7 +19,7 @@ $(addsuffix .s, \
 BONUS_SRCS = \
 $(addprefix $(ASM_DIR)/ft_, \
 $(addsuffix .s, \
-	atoi_base create_elem lst_add_front list_push_front \
+	atoi_base create_elem lst_add_front list_push_front list_size \
 ))
 
 # Detect debug flag

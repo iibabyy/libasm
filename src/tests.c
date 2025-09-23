@@ -21,6 +21,7 @@ void print_list(t_list *lst) {
 extern struct s_list *ft_create_elem(void *data);
 extern void ft_lst_add_front(t_list **lst, t_list *new);
 extern void ft_list_push_front(t_list **begin_list, void *data);
+extern int ft_list_size(t_list *begin_list);
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
@@ -28,6 +29,16 @@ extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
+
+void test_list_size(const char *label, t_list *list, int expected) {
+    int got = ft_list_size(list);
+
+    if (got == expected) {
+        printf("✅ PASS: %s → size=%d\n", label, got);
+    } else {
+        printf("❌ FAIL: %s → got %d, expected %d\n", label, got, expected);
+    }
+}
 
 void test_list_push_front(const char *label, t_list **begin_list, const char *data) {
     printf("▶ %s\n", label);
