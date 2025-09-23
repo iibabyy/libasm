@@ -80,8 +80,8 @@ section .data
     str_ptr     dq 0            ; stores input string pointer (rdi)
     base_ptr    dq 0            ; stores base string pointer (rsi)
     base_len    dd 0            ; stores length of base string
-	result		dq 1            ; stores the conversion result
-	sign		db 1            ; stores the result sign
+	result		dd 0            ; stores the conversion result
+	sign		dq 1            ; stores the result sign
 section .bss
     check_duplicate_array resb 256   ; table for checking duplicate base chars
                                      ; index = ASCII code, value = occurrence count
@@ -99,48 +99,48 @@ ft_atoi_base:
     jump_if_null rsi, return_err     ; rsi = base
 
     ; initialize internal variables (str_ptr, base_ptr, base_len)
-    call init_base
+    call atoi_init
 
     ; base must have at least 2 characters
     jump_if_less_than dword [rel base_len], 2, return_err
 
     ; check base validity (no whitespace, +, -, or duplicates)
     call check_base
-	jump_if_less_than eax, 0, return_err
+	jump_if_negative eax, return_err
 
-    mov rax, 1
-    jump_if_negative byte [rel sign], negative_sign
+    call compute_number
+
+    mov eax, dword [rel result]
+    imul qword [rel sign]
     ret
 
-negative_sign:
-    neg rax
-    ret
+; return_negative:
+;     mov 
 ;-----;
 
-
-; ---------- init_base ----------
-init_base:
+; ---------- atoi_init ----------
+atoi_init:
 	; rdi = str
 	; rsi = base
     mov qword [rel base_ptr], rsi  ; base_ptr = rsi (base string)
 
     ; sign = 1
-    mov byte [rel sign], 1
+    mov qword [rel sign], 1
 
 	dec rdi
-init_base.skip_whitespace_loop:
+atoi_init.skip_whitespace_loop:
 	inc rdi
-	jump_if_whitespace byte [rdi], init_base.skip_whitespace_loop
+	jump_if_whitespace byte [rdi], atoi_init.skip_whitespace_loop
 
 	dec rdi
-init_base.check_sign:
+atoi_init.check_sign:
 	inc rdi
-	jump_if_equal byte [rdi], '+', init_base.check_sign
-	jump_if_not_equal byte [rdi], '-', init_base.end
-	neg byte [rel sign]
-	jmp init_base.check_sign
+	jump_if_equal byte [rdi], '+', atoi_init.check_sign
+	jump_if_not_equal byte [rdi], '-', atoi_init.end
+	neg qword [rel sign]
+	jmp atoi_init.check_sign
 
-init_base.end:
+atoi_init.end:
 
     mov qword [rel str_ptr], rdi   ; str_ptr = rdi (input string)
 
@@ -204,6 +204,82 @@ check_base.end:
 check_base.error:
     mov eax, -1
     jmp check_base.end
+
+; ---------- compute_number ----------
+compute_number:
+    xor rax, rax
+    mov dword [rel result], 0                             
+    xor r8, r8
+
+    mov r8, qword [rel str_ptr]  ; char *str
+    xor r9, r9  ; int index = 0
+
+    dec r9
+compute_number.loop:
+    inc r9
+
+    ; str[r9] == 0 -> end
+    jump_if_equal byte [r8 + r9], 0, compute_number.end
+
+    ; find str[r9] index in base[]
+    mov dil, byte [r8 + r9]
+    call get_char_index_from_base_ptr
+
+    ; not found -> end
+    jump_if_negative eax, compute_number.end
+    
+    push rax
+    xor eax, eax
+    mov eax, dword [rel base_len]
+    mul dword [rel result]
+    mov dword [rel result], eax
+    pop rax
+    add dword [rel result], eax
+
+    jmp compute_number.loop
+
+compute_number.end:
+    ret
+
+
+; ---------- get_char_index_from_base_ptr ----------
+get_char_index_from_base_ptr:
+    ; dil = char c
+
+    push r12
+    push r13
+
+    xor r12, r12
+    xor r13, r13
+
+    mov r12, qword [rel base_ptr]
+
+    dec r13
+get_char_index_from_base_ptr.loop:
+    inc r13
+
+    ; end of string 'base' -> not found
+    jump_if_equal byte [r12 + r13], 0, get_char_index_from_base_ptr.not_found
+
+    ; char c == base[r13] -> found
+    jump_if_equal byte [r12 + r13], dil, get_char_index_from_base_ptr.found
+
+    jmp get_char_index_from_base_ptr.loop
+
+get_char_index_from_base_ptr.not_found:
+    mov eax, -1
+    jmp get_char_index_from_base_ptr.end
+
+get_char_index_from_base_ptr.found:
+    mov eax, r13d
+    jmp get_char_index_from_base_ptr.end
+
+get_char_index_from_base_ptr.end:
+    ; restoring the used callee-saved registers
+    pop r13
+    pop r12
+
+    ret
 
 ; ---------- return_0 ----------
 return_err:
