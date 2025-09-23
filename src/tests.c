@@ -5,12 +5,59 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+typedef struct s_list {
+    void            *content;
+    struct s_list   *next;
+}   t_list;
+
+void print_list(t_list *lst) {
+    while (lst) {
+        printf("[%s] -> ", (char *)lst->content);
+        lst = lst->next;
+    }
+    printf("NULL\n");
+}
+
+extern struct s_list *ft_create_elem(void *data);
+extern void ft_lst_add_front(t_list **lst, t_list *new);
+
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
 extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
+
+void test_lst_add_front(t_list *node, t_list *node_to_add) {
+    t_list *head = node;
+    ft_lst_add_front(&head, node_to_add);
+
+
+    if (head == node_to_add && head->next == node) {
+        printf("✅ PASS: Added node %p in front of %p → head ok, next ok\n", node_to_add, node);
+    } else {
+        printf("❌ FAIL: head=%p (expected %p), head->next=%p (expected %p)\n",
+               head, node_to_add, head ? head->next : NULL, node);
+    }
+}
+
+void test_create_elem(const char *input) {
+    t_list *node = ft_create_elem((void *)input);
+
+    if (!node) {
+        printf("❌ FAIL: ft_create_elem(\"%s\") returned NULL\n", input);
+        return;
+    }
+
+    if (node->content == input && node->next == NULL) {
+        printf("✅ PASS: ft_create_elem(\"%s\") → content ok, next=NULL\n", input);
+    } else {
+        printf("❌ FAIL: ft_create_elem(\"%s\") → content=%p (expected %p), next=%p (expected NULL)\n",
+               input, node->content, input, node->next);
+    }
+
+    free(node); // cleanup
+}
 
 void test_atoi_base(const char *str, const char *base, int expected) {
     int got = ft_atoi_base(str, base);

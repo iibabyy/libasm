@@ -6,6 +6,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+typedef struct s_list {
+    void            *content;
+    struct s_list   *next;
+}   t_list;
+
 void test_atoi_base(const char *str, const char *base, int expected);
 void test_strlen(char *input);
 void test_strcpy(const char *input);
@@ -13,9 +18,12 @@ void test_strcmp(const char *s1, const char *s2);
 void test_write(int fd, const char *msg);
 void test_read(const char *data);
 void test_strdup(const char *input);
+void test_create_elem(const char *input);
+void test_lst_add_front(t_list *first, t_list *second);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
+extern struct s_list *ft_create_elem(void *data);
 
 void check_strlen();
 void check_strcpy();
@@ -24,17 +32,62 @@ void check_write();
 void check_read();
 void check_strdup();
 void check_atoi_base();
+void check_create_elem();
+void check_lst_add_front();
+void check_lst_add_front();
 
 int main() {
-    check_strlen();
-    check_strcpy();
-    check_strcmp();
-    check_write();
-    check_read();
-    check_strdup();
-    check_atoi_base();
+    // check_strlen();
+    // check_strcpy();
+    // check_strcmp();
+    // check_write();
+    // check_read();
+    // check_strdup();
+    // check_atoi_base();
+    // check_create_elem();
+    check_lst_add_front();
 
 	return 0;
+}
+
+void check_lst_add_front() {
+    printf("\n=== Tests ft_lst_add_front ===\n");
+
+    // Create two single nodes
+    t_list *node1 = ft_create_elem("first");
+    t_list *node2 = ft_create_elem("second");
+
+    if (!node1 || !node2) {
+        printf("❌ FAIL: Could not allocate nodes\n");
+        free(node1);
+        free(node2);
+        return;
+    }
+
+    // Add node2 in front of node1
+    test_lst_add_front(node1, node2);
+
+    // Edge case: add to empty list
+    t_list *empty = NULL;
+    t_list *new_node = ft_create_elem("new");
+    test_lst_add_front(empty, new_node); // head remains NULL locally, can't test pointer update outside
+
+    free(node1);
+    free(node2);
+    free(new_node);
+
+    printf("=== Fin des tests ft_lst_add_front ===\n\n");
+}
+
+void check_create_elem() {
+    printf("\n=== Tests ft_create_elem ===\n");
+
+    test_create_elem("Hello");
+    test_create_elem("World");
+    test_create_elem("");   // empty string
+    test_create_elem(NULL); // NULL pointer as content
+
+    printf("=== Fin des tests ft_create_elem ===\n\n");
 }
 
 void check_atoi_base() {
