@@ -20,10 +20,14 @@ void test_read(const char *data);
 void test_strdup(const char *input);
 void test_create_elem(const char *input);
 void test_lst_add_front(t_list *first, t_list *second);
+void test_list_push_front(const char *label, t_list **begin_list, const char *data);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
+
 extern struct s_list *ft_create_elem(void *data);
+extern void ft_list_push_front(t_list **begin_list, void *data);
+void print_list(t_list *lst);
 
 void check_strlen();
 void check_strcpy();
@@ -35,19 +39,54 @@ void check_atoi_base();
 void check_create_elem();
 void check_lst_add_front();
 void check_lst_add_front();
+void check_list_push_front();
 
 int main() {
-    // check_strlen();
-    // check_strcpy();
-    // check_strcmp();
-    // check_write();
-    // check_read();
-    // check_strdup();
-    // check_atoi_base();
-    // check_create_elem();
+    check_strlen();
+    check_strcpy();
+    check_strcmp();
+    check_write();
+    check_read();
+    check_strdup();
+    check_atoi_base();
+    check_create_elem();
     check_lst_add_front();
+    check_list_push_front();
 
 	return 0;
+}
+
+void check_list_push_front() {
+    printf("\n=== Tests ft_list_push_front ===\n");
+
+    t_list *list = NULL;
+
+    // First node
+    test_list_push_front("Insert first node", &list, "one");
+    print_list(list);
+
+    // Push another at front
+    test_list_push_front("Insert second node", &list, "two");
+    print_list(list);
+
+    // Push third
+    test_list_push_front("Insert third node", &list, "three");
+    print_list(list);
+
+    // Edge case: NULL list pointer (should not segfault)
+    t_list **null_ptr = NULL;
+    ft_list_push_front(null_ptr, "ignored");
+    printf("✅ PASS: calling with NULL list pointer didn’t crash\n");
+
+    // Cleanup
+    t_list *tmp;
+    while (list) {
+        tmp = list->next;
+        free(list);
+        list = tmp;
+    }
+
+    printf("=== Fin des tests ft_list_push_front ===\n\n");
 }
 
 void check_lst_add_front() {

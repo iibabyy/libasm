@@ -20,6 +20,7 @@ void print_list(t_list *lst) {
 
 extern struct s_list *ft_create_elem(void *data);
 extern void ft_lst_add_front(t_list **lst, t_list *new);
+extern void ft_list_push_front(t_list **begin_list, void *data);
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
@@ -27,6 +28,24 @@ extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
+
+void test_list_push_front(const char *label, t_list **begin_list, const char *data) {
+    printf("▶ %s\n", label);
+
+    ft_list_push_front(begin_list, (void *)data);
+
+    if (!*begin_list) {
+        printf("❌ FAIL: list is still NULL after push_front(\"%s\")\n", data);
+        return;
+    }
+
+    if ((*begin_list)->content == data) {
+        printf("✅ PASS: pushed \"%s\" at front\n", data);
+    } else {
+        printf("❌ FAIL: head content mismatch → got %p (\"%s\"), expected %p (\"%s\")\n",
+               (*begin_list)->content, (char *)(*begin_list)->content, data, data);
+    }
+}
 
 void test_lst_add_front(t_list *node, t_list *node_to_add) {
     t_list *head = node;

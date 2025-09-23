@@ -6,11 +6,8 @@ SRCS_DIR = src
 ASM_DIR = $(SRCS_DIR)/asm
 OBJS_DIR = $(SRCS_DIR)/.objs
 
-MAIN_FILE = $(SRCS_DIR)/main.s
-EXECUTABLE = program
-
-C_MAIN_FILES = $(SRCS_DIR)/main.c $(SRCS_DIR)/tests.c
-C_EXECUTABLE = cprogram
+TEST_MAIN_FILES = $(SRCS_DIR)/main.c $(SRCS_DIR)/tests.c
+TEST_EXCUTABLE = test
 
 # ASM sources
 SRCS = \
@@ -22,7 +19,7 @@ $(addsuffix .s, \
 BONUS_SRCS = \
 $(addprefix $(ASM_DIR)/ft_, \
 $(addsuffix .s, \
-	atoi_base create_elem lst_add_front \
+	atoi_base create_elem lst_add_front list_push_front \
 ))
 
 # Detect debug flag
@@ -32,6 +29,8 @@ endif
 
 # Detect bonus flag
 ifneq (,$(filter bonus,$(MAKECMDGOALS)))
+	SRCS += $(BONUS_SRCS)
+else ifneq (,$(filter test,$(MAKECMDGOALS)))
 	SRCS += $(BONUS_SRCS)
 endif
 
@@ -48,18 +47,13 @@ BONUS_OBJS := $(BONUS_SRCS:$(ASM_BONUS_DIR)/%.s=$(OBJS_DIR)/bonus/%.o)
 # Targets
 all: $(LIBASM)
 
-asm: $(EXECUTABLE)
-c: $(C_EXECUTABLE)
+test: $(TEST_EXCUTABLE)
 
-# Main program
-$(EXECUTABLE): $(MAIN_FILE) $(LIBASM)
-	mkdir -p $(OBJS_DIR)
-	$(NASM) $(NASM_FLAGS) $< -o $(OBJS_DIR)/$(EXECUTABLE).o
-	ld $(OBJS_DIR)/$(EXECUTABLE).o $(LIBASM) -o $(EXECUTABLE)
-
-# C program
-$(C_EXECUTABLE): $(C_MAIN_FILES) $(LIBASM)
-	cc $(C_MAIN_FILES) -L. -lasm -g3 -o $(C_EXECUTABLE)
+# test program
+$(TEST_EXCUTABLE): $(TEST_MAIN_FILES) $(LIBASM)
+	cc $(TEST_MAIN_FILES) -L. -lasm -g3 -o $(TEST_EXCUTABLE)
+	@clear
+	./$(TEST_EXCUTABLE)
 
 # Library
 $(LIBASM): $(OBJS)
@@ -68,18 +62,18 @@ $(LIBASM): $(OBJS)
 # Generic rules
 $(OBJS_DIR)/%.o : $(ASM_DIR)/%.s
 	@mkdir -p $(OBJS_DIR)
-	@$(NASM) $(NASM_FLAGS) $< -o $@
+	$(NASM) $(NASM_FLAGS) $< -o $@
 
 $(OBJS_DIR)/bonus/%.o : $(ASM_BONUS_DIR)/%.s
 	@mkdir -p $(OBJS_DIR)/bonus
-	@$(NASM) $(NASM_FLAGS) $< -o $@
+	$(NASM) $(NASM_FLAGS) $< -o $@
 
 # Clean
 clean:
 	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	rm -f $(LIBASM) $(EXECUTABLE) $(C_EXECUTABLE)
+	rm -f $(LIBASM) $(TEST_EXCUTABLE)
 
 re: fclean all
 
