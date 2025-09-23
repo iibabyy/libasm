@@ -93,6 +93,27 @@ void check_list_size() {
     free(n4);
     free(n5);
 
+    // --- Stress test: 100000 nodes ---
+    printf("\n--- Stress test: 100000 nodes ---\n");
+    t_list *big_list = NULL;
+    for (int i = 0; i < 100000; i++) {
+        // push string numbers like "node_42"
+        char *buf = malloc(32);
+        snprintf(buf, 32, "node_%d", i);
+        ft_list_push_front(&big_list, buf);
+    }
+
+    test_list_size("100000 nodes", big_list, 100000);
+
+    // Cleanup (free both node content and nodes)
+    t_list *tmp;
+    while (big_list) {
+        tmp = big_list->next;
+        free(big_list->content);
+        free(big_list);
+        big_list = tmp;
+    }
+
     printf("=== Fin des tests ft_list_size ===\n\n");
 }
 
