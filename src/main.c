@@ -69,8 +69,8 @@ void check_atoi_base() {
     test_atoi_base("77", "01234567", 63);
 
     // --- Base personnalisée ---
-    test_atoi_base("abba", "ab", 15);   // "abba" en base2 → 1111
-    test_atoi_base("cab", "abc", 21);   // "cab" en base3 → (2*9 + 0*3 + 1)
+    test_atoi_base("abba", "ab", 6);   // "abba" en base2 → 1111
+    test_atoi_base("cab", "abc", 19);   // "cab" en base3 → (2*9 + 0*3 + 1)
 
     printf("=== Fin des tests ft_atoi_base ===\n\n");
 }
