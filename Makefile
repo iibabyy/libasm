@@ -83,4 +83,9 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re debug bonus asm c
+debug:
+	@echo -n
+bonus:
+	@echo -n
+
+.PHONY: all clean fclean re asm
