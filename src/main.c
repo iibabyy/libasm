@@ -26,6 +26,7 @@ void test_list_find(const char *label, t_list *begin, t_list *target, t_list *ex
 void test_list_remove(const char *label, t_list **begin, t_list *to_remove, t_list *expected_head);
 void test_list_sort(const char *label, t_list **list);
 void test_remove_lowest(const char *label, t_list **list);
+void test_list_remove_if(const char *label, t_list **list, const char *to_remove);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
@@ -50,6 +51,7 @@ void check_list_find();
 void check_list_remove();
 void check_list_sort();
 void check_remove_lowest();
+void check_list_remove_if();
 
 int main() {
     check_strlen();
@@ -67,8 +69,47 @@ int main() {
     check_list_remove();
     check_remove_lowest();
     check_list_sort();
+    check_list_remove_if();
 
 	return 0;
+}
+
+void check_list_remove_if() {
+    printf("\n=== Tests ft_list_remove_if ===\n");
+
+    t_list *list = NULL;
+
+    // Test 1: empty list
+    test_list_remove_if("Empty list", &list, "apple");
+
+    // Test 2: single element (match)
+    ft_list_push_front(&list, strdup("apple"));
+    test_list_remove_if("Single element list (match)", &list, "apple");
+
+    // Test 3: single element (no match)
+    ft_list_push_front(&list, strdup("banana"));
+    test_list_remove_if("Single element list (no match)", &list, "apple");
+
+    // Test 4: multiple elements with matches
+    const char *values[] = {"apple", "banana", "apple", "cherry", "apple"};
+    for (int i = 0; i < 5; i++) {
+        ft_list_push_front(&list, strdup(values[i]));
+    }
+    test_list_remove_if("Multiple elements (remove \"apple\")", &list, "apple");
+
+    // Test 5: remove node not in list
+    test_list_remove_if("Remove \"orange\" (not in list)", &list, "orange");
+
+    // Cleanup
+    t_list *tmp;
+    while (list) {
+        tmp = list->next;
+        free(list->content);
+        free(list);
+        list = tmp;
+    }
+
+    printf("=== Fin des tests ft_list_remove_if ===\n\n");
 }
 
 void check_remove_lowest() {

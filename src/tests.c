@@ -26,6 +26,7 @@ extern t_list *ft_list_find(t_list *begin, t_list *to_find);
 extern t_list *ft_list_remove(t_list **begin, t_list *to_remove);
 extern t_list *remove_lowest(t_list **begin, int (*cmp)());
 extern void ft_list_sort(t_list **begin_list, int (*cmp)());
+extern void ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void *));
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
@@ -36,6 +37,35 @@ extern int ft_atoi_base(const char *str, const char *base);
 
 int cmp_int_str(t_list *a, t_list *b) {
     return strcmp((char *)a->content, (char *)b->content);
+}
+
+void free_content(void *data) {
+    free(data);
+}
+
+void test_list_remove_if(const char *label, t_list **list, const char *to_remove) {
+    printf("▶ %s\n", label);
+
+    ft_list_remove_if(list, (void *)to_remove, cmp_int_str, free_content);
+
+    // Verify no node matches to_remove
+    int found = 0;
+    t_list *curr = *list;
+    while (curr) {
+        if (strcmp((char *)curr->content, to_remove) == 0) {
+            found = 1;
+            break;
+        }
+        curr = curr->next;
+    }
+
+    if (!found) {
+        printf("✅ PASS: all nodes \"%s\" removed\n", to_remove);
+    } else {
+        printf("❌ FAIL: some nodes \"%s\" still in list\n", to_remove);
+    }
+
+    print_list(*list);
 }
 
 void test_remove_lowest(const char *label, t_list **list) {
