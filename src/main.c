@@ -66,7 +66,7 @@ int main() {
     check_list_find();
     check_list_remove();
     check_remove_lowest();
-    // check_list_sort();
+    check_list_sort();
 
 	return 0;
 }
