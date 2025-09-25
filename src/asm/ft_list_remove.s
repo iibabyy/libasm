@@ -11,6 +11,7 @@ ft_list_remove:
 	; rdi = t_list **begin
 	; rsi = t_list *to_remove
 
+	xor rax, rax
 	mov r8, qword [rdi]
 
 	cmp r8, 0
