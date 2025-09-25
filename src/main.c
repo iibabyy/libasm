@@ -22,6 +22,7 @@ void test_create_elem(const char *input);
 void test_lst_add_front(t_list *first, t_list *second);
 void test_list_push_front(const char *label, t_list **begin_list, const char *data);
 void test_list_size(const char *label, t_list *list, int expected);
+void test_list_find(const char *label, t_list *begin, t_list *target, t_list *expected);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
@@ -42,6 +43,7 @@ void check_lst_add_front();
 void check_lst_add_front();
 void check_list_push_front();
 void check_list_size();
+void check_list_find();
 
 int main() {
     check_strlen();
@@ -55,8 +57,44 @@ int main() {
     check_lst_add_front();
     check_list_push_front();
     check_list_size();
+    check_list_find();
 
 	return 0;
+}
+
+void check_list_find() {
+    printf("\n=== Tests ft_list_find ===\n");
+
+    // Build a 3-element list
+    t_list *n1 = ft_create_elem("one");
+    t_list *n2 = ft_create_elem("two");
+    t_list *n3 = ft_create_elem("three");
+    n2->next = n1;
+    n3->next = n2;
+
+    // Case 1: find head
+    test_list_find("Find head (n3)", n3, n3, n3);
+
+    // Case 2: find middle
+    test_list_find("Find middle (n2)", n3, n2, n2);
+
+    // Case 3: find tail
+    test_list_find("Find tail (n1)", n3, n1, n1);
+
+    // Case 4: not in list
+    t_list *other = ft_create_elem("other");
+    test_list_find("Find non-existing node", n3, other, NULL);
+
+    // Case 5: empty list
+    test_list_find("Empty list", NULL, n1, NULL);
+
+    // Cleanup
+    free(n1);
+    free(n2);
+    free(n3);
+    free(other);
+
+    printf("=== Fin des tests ft_list_find ===\n\n");
 }
 
 void check_list_size() {
