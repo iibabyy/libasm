@@ -35,8 +35,8 @@ extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
 
-int cmp_int_str(t_list *a, t_list *b) {
-    return strcmp((char *)a->content, (char *)b->content);
+int cmp_int_str(char *a, char *b) {
+    return strcmp(a, b);
 }
 
 void free_content(void *data) {
