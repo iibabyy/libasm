@@ -86,7 +86,7 @@ void check_remove_lowest() {
     // Test 3: multiple elements
     list = NULL;
     const char *values[] = {"orange", "banana", "apple", "grape", "cherry"};
-    for (int i = 0; i < 5; i++) {
+    for (int i = 4; i >= 0; i--) {
         ft_list_push_front(&list, strdup(values[i]));
     }
     test_remove_lowest("Multiple elements (expect apple removed)", &list);

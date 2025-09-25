@@ -110,7 +110,7 @@ remove_lowest.find_lowest_loop:
 	mov rsi, qword [rbp -32]; current_node
 	call qword [rbp -16]; cmp()
 
-	cmp rax, 0; current_lowest <= current_node ?
+	cmp eax, 0; current_lowest < current_node ?
 	jle remove_lowest.find_lowest_loop
 
 	mov r8, qword [rbp -32]; r8 = current_node

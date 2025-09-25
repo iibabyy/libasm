@@ -43,15 +43,12 @@ void test_remove_lowest(const char *label, t_list **list) {
 
     // Step 1: Find expected lowest node in the current list
     t_list *curr = *list;
-    t_list *expected = NULL;
-    if (curr) {
-        expected = curr;
-        while (curr) {
-            if (strcmp((char *)curr->content, (char *)expected->content) < 0) {
-                expected = curr;
-            }
-            curr = curr->next;
+    t_list *expected = curr;
+    while (curr) {
+        if (strcmp((char *)curr->content, (char *)expected->content) < 0) {
+            expected = curr;
         }
+        curr = curr->next;
     }
 
     // Step 2: Call remove_lowest
