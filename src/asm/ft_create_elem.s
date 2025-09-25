@@ -1,13 +1,13 @@
-extern malloc
 extern __errno_location
+extern malloc
 
 struc t_list
 	.data:	resb 8
 	.next:		resb 8
 endstruc
 
-section .text
-global ft_create_elem
+	section .text
+	global ft_create_elem
 
 ;t_list *ft_create_elem(void *data);
 ft_create_elem:
@@ -25,7 +25,7 @@ ft_create_elem:
 	mov qword [rax + t_list.next], 0
 	jmp ft_create_elem.end
 ft_create_elem.malloc_failed:
-	mov r9, __errno_location 
+	mov r9, __errno_location
 	call r9
 	mov dword [rax], 12; ENOMEM (12)
 ft_create_elem.end:
