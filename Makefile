@@ -82,4 +82,4 @@ debug:
 bonus:
 	@echo -n
 
-.PHONY: all clean fclean re asm
+.PHONY: all clean fclean re asm test

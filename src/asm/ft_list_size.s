@@ -10,10 +10,10 @@ section .text
 ft_list_size:
 	; rdi = t_list *begin
 
+	mov eax, 0
+
 	cmp rdi, 0
 	je ft_list_size.end
-
-	mov eax, 0
 ft_list_size.loop:
 	inc eax
 
