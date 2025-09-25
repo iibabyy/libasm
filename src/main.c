@@ -23,6 +23,7 @@ void test_lst_add_front(t_list *first, t_list *second);
 void test_list_push_front(const char *label, t_list **begin_list, const char *data);
 void test_list_size(const char *label, t_list *list, int expected);
 void test_list_find(const char *label, t_list *begin, t_list *target, t_list *expected);
+void test_list_remove(const char *label, t_list **begin, t_list *to_remove, t_list *expected_head);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
@@ -38,12 +39,13 @@ void check_write();
 void check_read();
 void check_strdup();
 void check_atoi_base();
+
 void check_create_elem();
-void check_lst_add_front();
 void check_lst_add_front();
 void check_list_push_front();
 void check_list_size();
 void check_list_find();
+void check_list_remove();
 
 int main() {
     check_strlen();
@@ -58,8 +60,60 @@ int main() {
     check_list_push_front();
     check_list_size();
     check_list_find();
+    check_list_remove();
 
 	return 0;
+}
+
+void check_list_remove() {
+    printf("\n=== Tests ft_list_remove ===\n");
+
+    // Build list: n3 -> n2 -> n1
+    t_list *n1 = ft_create_elem("one");
+    t_list *n2 = ft_create_elem("two");
+    t_list *n3 = ft_create_elem("three");
+    n2->next = n1;
+    n3->next = n2;
+    t_list *head = n3;
+
+    // Case 1: remove head (n3)
+    test_list_remove("Remove head", &head, n3, n2);
+    print_list(head);
+
+    // Case 2: remove middle (n2)
+    test_list_remove("Remove middle", &head, n2, n1);
+    print_list(head);
+
+    // Case 3: remove tail (n1)
+    test_list_remove("Remove tail", &head, n1, NULL);
+    print_list(head);
+
+    // Case 4: remove from empty list
+    head = NULL;
+    test_list_remove("Remove from empty list", &head, n1, NULL);
+
+    // Case 5: remove node not in list
+    t_list *m1 = ft_create_elem("alpha");
+    t_list *m2 = ft_create_elem("beta");
+    t_list *m3 = ft_create_elem("gamma");
+    m2->next = m1;
+    m3->next = m2;
+    head = m3;
+    t_list *other = ft_create_elem("not_in_list");
+
+    test_list_remove("Remove non-existing node", &head, other, m3);
+    print_list(head);
+
+    // Cleanup
+    free(n1);
+    free(n2);
+    free(n3);
+    free(m1);
+    free(m2);
+    free(m3);
+    free(other);
+
+    printf("=== Fin des tests ft_list_remove ===\n\n");
 }
 
 void check_list_find() {
