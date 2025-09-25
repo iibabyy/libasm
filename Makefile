@@ -19,19 +19,16 @@ $(addsuffix .s, \
 BONUS_SRCS = \
 $(addprefix $(ASM_DIR)/ft_, \
 $(addsuffix .s, \
-	atoi_base create_elem lst_add_front list_push_front list_size list_find list_remove \
+	atoi_base create_elem lst_add_front list_push_front list_size list_find list_remove list_sort \
 ))
-
-# Detect debug flag
-ifneq (,$(filter debug,$(MAKECMDGOALS)))
-	NASM_FLAGS += -g
-endif
 
 # Detect bonus flag
 ifneq (,$(filter bonus,$(MAKECMDGOALS)))
 	SRCS += $(BONUS_SRCS)
 else ifneq (,$(filter test,$(MAKECMDGOALS)))
+	NASM_FLAGS += -g
 	SRCS += $(BONUS_SRCS)
+	REAL_GOALS := $(filter-out debug bonus,$(MAKECMDGOALS))
 endif
 
 # Remove debug/bonus from goals so Make doesn't try to build them as targets

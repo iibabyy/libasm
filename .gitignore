@@ -3,5 +3,5 @@ libasm.a
 program
 cprogram
 # .vscode
-ft_list_sort.s
 test
+vgcore*

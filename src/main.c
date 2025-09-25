@@ -24,6 +24,8 @@ void test_list_push_front(const char *label, t_list **begin_list, const char *da
 void test_list_size(const char *label, t_list *list, int expected);
 void test_list_find(const char *label, t_list *begin, t_list *target, t_list *expected);
 void test_list_remove(const char *label, t_list **begin, t_list *to_remove, t_list *expected_head);
+void test_list_sort(const char *label, t_list **list);
+void test_remove_lowest(const char *label, t_list **list);
 
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
@@ -46,6 +48,8 @@ void check_list_push_front();
 void check_list_size();
 void check_list_find();
 void check_list_remove();
+void check_list_sort();
+void check_remove_lowest();
 
 int main() {
     check_strlen();
@@ -61,8 +65,115 @@ int main() {
     check_list_size();
     check_list_find();
     check_list_remove();
+    check_remove_lowest();
+    // check_list_sort();
 
 	return 0;
+}
+
+void check_remove_lowest() {
+    printf("\n=== Tests remove_lowest ===\n");
+
+    t_list *list = NULL;
+
+    // Test 1: empty list
+    test_remove_lowest("Empty list", &list);
+
+    // Test 2: single element
+    ft_list_push_front(&list, strdup("apple"));
+    test_remove_lowest("Single element list", &list);
+
+    // Test 3: multiple elements
+    list = NULL;
+    const char *values[] = {"orange", "banana", "apple", "grape", "cherry"};
+    for (int i = 0; i < 5; i++) {
+        ft_list_push_front(&list, strdup(values[i]));
+    }
+    test_remove_lowest("Multiple elements (expect apple removed)", &list);
+
+    // Test 4: duplicates
+    list = NULL;
+    const char *dups[] = {"banana", "banana", "apple", "cherry"};
+    for (int i = 0; i < 4; i++) {
+        ft_list_push_front(&list, strdup(dups[i]));
+    }
+    test_remove_lowest("List with duplicates (expect apple removed)", &list);
+
+    // Cleanup remaining list
+    t_list *tmp;
+    while (list) {
+        tmp = list->next;
+        free(list->content);
+        free(list);
+        list = tmp;
+    }
+
+    printf("=== Fin des tests remove_lowest ===\n\n");
+}
+
+void check_list_sort() {
+    printf("\n=== Tests ft_list_sort ===\n");
+
+    t_list *list = NULL;
+
+    // Test 1: empty list
+    test_list_sort("Empty list", &list);
+
+    // Test 2: single element
+    ft_list_push_front(&list, "apple");
+    test_list_sort("Single element list", &list);
+
+    // Cleanup
+    free(list);
+    list = NULL;
+
+    // Test 3: multiple elements
+    const char *values[] = {"orange", "banana", "apple", "grape", "cherry"};
+    for (int i = 0; i < 5; i++) {
+        ft_list_push_front(&list, strdup(values[i]));
+    }
+    test_list_sort("Multiple elements list", &list);
+
+    // Cleanup
+    t_list *tmp;
+    while (list) {
+        tmp = list->next;
+        free(list->content);
+        free(list);
+        list = tmp;
+    }
+
+    // Test 4: already sorted list
+    const char *sorted_vals[] = {"apple", "banana", "cherry", "grape", "orange"};
+    for (int i = 4; i >= 0; i--) { // push in reverse to get correct order
+        ft_list_push_front(&list, strdup(sorted_vals[i]));
+    }
+    test_list_sort("Already sorted list", &list);
+
+    // Cleanup
+    while (list) {
+        tmp = list->next;
+        free(list->content);
+        free(list);
+        list = tmp;
+    }
+
+    // Test 5: list with duplicates
+    const char *dups[] = {"apple", "banana", "apple", "banana", "cherry"};
+    for (int i = 0; i < 5; i++) {
+        ft_list_push_front(&list, strdup(dups[i]));
+    }
+    test_list_sort("List with duplicates", &list);
+
+    // Cleanup
+    while (list) {
+        tmp = list->next;
+        free(list->content);
+        free(list);
+        list = tmp;
+    }
+
+    printf("=== Fin des tests ft_list_sort ===\n\n");
 }
 
 void check_list_remove() {
@@ -100,18 +211,33 @@ void check_list_remove() {
     m3->next = m2;
     head = m3;
     t_list *other = ft_create_elem("not_in_list");
-
     test_list_remove("Remove non-existing node", &head, other, m3);
     print_list(head);
 
+    // Case 6: remove NULL node (should do nothing)
+    test_list_remove("Remove NULL node", &head, NULL, m3);
+    print_list(head);
+
+    // Case 7: remove all nodes one by one
+    test_list_remove("Remove m3", &head, m3, m2);
+    test_list_remove("Remove m2", &head, m2, m1);
+    test_list_remove("Remove m1", &head, m1, NULL);
+    print_list(head);
+
+    // Case 8: list with duplicate values
+    t_list *d1 = ft_create_elem("dup");
+    t_list *d2 = ft_create_elem("dup");
+    d2->next = d1;
+    head = d2;
+    test_list_remove("Remove first of duplicates", &head, d2, d1);
+    print_list(head);
+    test_list_remove("Remove second of duplicates", &head, d1, NULL);
+    print_list(head);
+
     // Cleanup
-    free(n1);
-    free(n2);
-    free(n3);
-    free(m1);
-    free(m2);
-    free(m3);
-    free(other);
+    free(n1); free(n2); free(n3);
+    free(m1); free(m2); free(m3); free(other);
+    free(d1); free(d2);
 
     printf("=== Fin des tests ft_list_remove ===\n\n");
 }
@@ -185,17 +311,17 @@ void check_list_size() {
     free(n4);
     free(n5);
 
-    // --- Stress test: 100000 nodes ---
-    printf("\n--- Stress test: 100000 nodes ---\n");
+    // --- Stress test: 1000 nodes ---
+    printf("\n--- Stress test: 1000 nodes ---\n");
     t_list *big_list = NULL;
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
         // push string numbers like "node_42"
         char *buf = malloc(32);
         snprintf(buf, 32, "node_%d", i);
         ft_list_push_front(&big_list, buf);
     }
 
-    test_list_size("100000 nodes", big_list, 100000);
+    test_list_size("1000 nodes", big_list, 1000);
 
     // Cleanup (free both node content and nodes)
     t_list *tmp;

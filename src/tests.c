@@ -24,6 +24,8 @@ extern void ft_list_push_front(t_list **begin_list, void *data);
 extern int ft_list_size(t_list *begin_list);
 extern t_list *ft_list_find(t_list *begin, t_list *to_find);
 extern t_list *ft_list_remove(t_list **begin, t_list *to_remove);
+extern t_list *remove_lowest(t_list **begin, int (*cmp)());
+extern void ft_list_sort(t_list **begin_list, int (*cmp)());
 
 extern size_t ft_strlen(const char *str);
 extern char *ft_strcpy(char *dst, char *src);
@@ -31,6 +33,75 @@ extern int ft_strcmp(const char *s1, const char *s2);
 extern ssize_t ft_write(int fd, const void *buf, size_t count);
 extern ssize_t ft_read(int fd, void *buf, size_t count);
 extern int ft_atoi_base(const char *str, const char *base);
+
+int cmp_int_str(t_list *a, t_list *b) {
+    return strcmp((char *)a->content, (char *)b->content);
+}
+
+void test_remove_lowest(const char *label, t_list **list) {
+    printf("▶ %s\n", label);
+
+    // Step 1: Find expected lowest node in the current list
+    t_list *curr = *list;
+    t_list *expected = NULL;
+    if (curr) {
+        expected = curr;
+        while (curr) {
+            if (strcmp((char *)curr->content, (char *)expected->content) < 0) {
+                expected = curr;
+            }
+            curr = curr->next;
+        }
+    }
+
+    // Step 2: Call remove_lowest
+    t_list *removed = remove_lowest(list, cmp_int_str);
+
+    // Step 3: Check correctness
+    if (expected == NULL && removed == NULL) {
+        printf("✅ PASS: list empty, nothing removed\n");
+    } else if (removed == expected) {
+        printf("✅ PASS: removed lowest = %s\n", (char *)removed->content);
+    } else {
+        printf("❌ FAIL: removed %s, expected %s\n",
+               removed ? (char *)removed->content : "(null)",
+               expected ? (char *)expected->content : "(null)");
+    }
+
+    // Step 4: Show new list
+    print_list(*list);
+
+    // Step 5: Free removed node
+    if (removed) {
+        free(removed->content);
+        free(removed);
+    }
+}
+
+void test_list_sort(const char *label, t_list **list) {
+    printf("▶ %s\n", label);
+
+    ft_list_sort(list, cmp_int_str);
+
+    // Verify sorted order
+    t_list *curr = *list;
+    int sorted = 1;
+    while (curr && curr->next) {
+        if (strcmp((char *)curr->content, (char *)curr->next->content) > 0) {
+            sorted = 0;
+            break;
+        }
+        curr = curr->next;
+    }
+
+    if (sorted) {
+        printf("✅ PASS: list sorted\n");
+    } else {
+        printf("❌ FAIL: list not sorted\n");
+    }
+
+    print_list(*list);
+}
 
 void test_list_remove(const char *label, t_list **begin, t_list *to_remove, t_list *expected_head) {
     t_list *got = ft_list_remove(begin, to_remove);
