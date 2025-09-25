@@ -1,5 +1,5 @@
 NASM = nasm
-NASM_FLAGS = -felf64
+NASM_FLAGS = -felf64 -g
 LIBASM = libasm.a
 
 SRCS_DIR = src
@@ -22,27 +22,19 @@ $(addsuffix .s, \
 	atoi_base create_elem lst_add_front list_push_front list_size list_find list_remove list_sort list_remove_if \
 ))
 
-# Detect bonus flag
-ifneq (,$(filter bonus,$(MAKECMDGOALS)))
+ifneq (,$(filter test,$(MAKECMDGOALS)))
 	SRCS += $(BONUS_SRCS)
-else ifneq (,$(filter test,$(MAKECMDGOALS)))
-	NASM_FLAGS += -g
+else ifneq (,$(filter bonus,$(MAKECMDGOALS)))
 	SRCS += $(BONUS_SRCS)
-	REAL_GOALS := $(filter-out debug bonus,$(MAKECMDGOALS))
-endif
-
-# Remove debug/bonus from goals so Make doesn't try to build them as targets
-REAL_GOALS := $(filter-out debug bonus,$(MAKECMDGOALS))
-ifeq ($(REAL_GOALS),)
-	REAL_GOALS := all
 endif
 
 # Objects
 OBJS := $(SRCS:$(ASM_DIR)/%.s=$(OBJS_DIR)/%.o)
-BONUS_OBJS := $(BONUS_SRCS:$(ASM_BONUS_DIR)/%.s=$(OBJS_DIR)/bonus/%.o)
 
 # Targets
-all: $(LIBASM)
+all: $(LIBASM) $(SRCS)
+
+bonus: all
 
 test: $(TEST_EXCUTABLE)
 
@@ -74,9 +66,4 @@ fclean: clean
 
 re: fclean all
 
-debug:
-	@echo -n
-bonus:
-	@echo -n
-
-.PHONY: all clean fclean re asm test
+.PHONY: all clean fclean re asm test bonus
