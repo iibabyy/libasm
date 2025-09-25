@@ -96,11 +96,13 @@ remove_lowest:
 	mov qword [rbp -24], r8;		[rbp -24] = t_list *current_lowest
 
 	mov r8, qword [rbp -24]; current_lowest
-	mov r9, qword [r8 + t_list.next]; current_node
-
-	mov qword [rbp -32], r9;	[rbp -32] = t_list *current_node
+	mov qword [rbp -32], r8;	[rbp -32] (current_node) = current_lowest (we skip to the next node at the beginning of the loop)
 
 remove_lowest.find_lowest_loop:
+	mov r8, qword [rbp -32]; r8 = current_node
+	mov r11, qword [r8 + t_list.next]; r11 = current_node->next
+	mov qword [rbp -32], r11; current_node = r11
+
 	cmp qword [rbp -32], 0; current_node == 0 ?
 	je remove_lowest.end
 
@@ -109,13 +111,10 @@ remove_lowest.find_lowest_loop:
 	call qword [rbp -16]; cmp()
 
 	cmp rax, 0; current_lowest <= current_node ?
-	jle remove_lowest.find_lowest_loop.rest
+	jle remove_lowest.find_lowest_loop
+
 	mov r8, qword [rbp -32]; r8 = current_node
 	mov qword [rbp -24], r8; current_lowest = current_node
-remove_lowest.find_lowest_loop.rest:
-	mov r8, qword [rbp -32]; r8 = current_node
-	mov r11, qword [r8 + t_list.next]; r11 = current_node->next
-	mov qword [rbp -32], r11; current_node = r11
 	jmp remove_lowest.find_lowest_loop
 remove_lowest.end:
 	mov rdi, qword [rbp -8]; rdi = t_list **begin

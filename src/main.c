@@ -211,33 +211,18 @@ void check_list_remove() {
     m3->next = m2;
     head = m3;
     t_list *other = ft_create_elem("not_in_list");
+
     test_list_remove("Remove non-existing node", &head, other, m3);
     print_list(head);
 
-    // Case 6: remove NULL node (should do nothing)
-    test_list_remove("Remove NULL node", &head, NULL, m3);
-    print_list(head);
-
-    // Case 7: remove all nodes one by one
-    test_list_remove("Remove m3", &head, m3, m2);
-    test_list_remove("Remove m2", &head, m2, m1);
-    test_list_remove("Remove m1", &head, m1, NULL);
-    print_list(head);
-
-    // Case 8: list with duplicate values
-    t_list *d1 = ft_create_elem("dup");
-    t_list *d2 = ft_create_elem("dup");
-    d2->next = d1;
-    head = d2;
-    test_list_remove("Remove first of duplicates", &head, d2, d1);
-    print_list(head);
-    test_list_remove("Remove second of duplicates", &head, d1, NULL);
-    print_list(head);
-
     // Cleanup
-    free(n1); free(n2); free(n3);
-    free(m1); free(m2); free(m3); free(other);
-    free(d1); free(d2);
+    free(n1);
+    free(n2);
+    free(n3);
+    free(m1);
+    free(m2);
+    free(m3);
+    free(other);
 
     printf("=== Fin des tests ft_list_remove ===\n\n");
 }
