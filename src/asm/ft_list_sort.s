@@ -1,5 +1,5 @@
 struc t_list
-	.content:	resb 8
+	.data:	resb 8
 	.next:		resb 8
 endstruc
 
@@ -107,9 +107,9 @@ remove_lowest.find_lowest_loop:
 	je remove_lowest.end
 
 	mov rdi, qword [rbp -24]; current_lowest
-	mov rdi, [rdi + t_list.content]
+	mov rdi, [rdi + t_list.data]
 	mov rsi, qword [rbp -32]; current_node
-	mov rsi, [rsi + t_list.content]
+	mov rsi, [rsi + t_list.data]
 	call qword [rbp -16]; cmp()
 
 	cmp eax, 0; current_lowest < current_node ?

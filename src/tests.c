@@ -6,13 +6,13 @@
 #include <fcntl.h>
 
 typedef struct s_list {
-    void            *content;
+    void            *data;
     struct s_list   *next;
 }   t_list;
 
 void print_list(t_list *lst) {
     while (lst) {
-        printf("[%s] -> ", (char *)lst->content);
+        printf("[%s] -> ", (char *)lst->data);
         lst = lst->next;
     }
     printf("NULL\n");
@@ -52,7 +52,7 @@ void test_list_remove_if(const char *label, t_list **list, const char *to_remove
     int found = 0;
     t_list *curr = *list;
     while (curr) {
-        if (strcmp((char *)curr->content, to_remove) == 0) {
+        if (strcmp((char *)curr->data, to_remove) == 0) {
             found = 1;
             break;
         }
@@ -75,7 +75,7 @@ void test_remove_lowest(const char *label, t_list **list) {
     t_list *curr = *list;
     t_list *expected = curr;
     while (curr) {
-        if (strcmp((char *)curr->content, (char *)expected->content) < 0) {
+        if (strcmp((char *)curr->data, (char *)expected->data) < 0) {
             expected = curr;
         }
         curr = curr->next;
@@ -88,11 +88,11 @@ void test_remove_lowest(const char *label, t_list **list) {
     if (expected == NULL && removed == NULL) {
         printf("✅ PASS: list empty, nothing removed\n");
     } else if (removed == expected) {
-        printf("✅ PASS: removed lowest = %s\n", (char *)removed->content);
+        printf("✅ PASS: removed lowest = %s\n", (char *)removed->data);
     } else {
         printf("❌ FAIL: removed %s, expected %s\n",
-               removed ? (char *)removed->content : "(null)",
-               expected ? (char *)expected->content : "(null)");
+               removed ? (char *)removed->data : "(null)",
+               expected ? (char *)expected->data : "(null)");
     }
 
     // Step 4: Show new list
@@ -100,7 +100,7 @@ void test_remove_lowest(const char *label, t_list **list) {
 
     // Step 5: Free removed node
     if (removed) {
-        free(removed->content);
+        free(removed->data);
         free(removed);
     }
 }
@@ -114,7 +114,7 @@ void test_list_sort(const char *label, t_list **list) {
     t_list *curr = *list;
     int sorted = 1;
     while (curr && curr->next) {
-        if (strcmp((char *)curr->content, (char *)curr->next->content) > 0) {
+        if (strcmp((char *)curr->data, (char *)curr->next->data) > 0) {
             sorted = 0;
             break;
         }
@@ -171,11 +171,11 @@ void test_list_push_front(const char *label, t_list **begin_list, const char *da
         return;
     }
 
-    if ((*begin_list)->content == data) {
+    if ((*begin_list)->data == data) {
         printf("✅ PASS: pushed \"%s\" at front\n", data);
     } else {
         printf("❌ FAIL: head content mismatch → got %p (\"%s\"), expected %p (\"%s\")\n",
-               (*begin_list)->content, (char *)(*begin_list)->content, data, data);
+               (*begin_list)->data, (char *)(*begin_list)->data, data, data);
     }
 }
 
@@ -200,11 +200,11 @@ void test_create_elem(const char *input) {
         return;
     }
 
-    if (node->content == input && node->next == NULL) {
+    if (node->data == input && node->next == NULL) {
         printf("✅ PASS: ft_create_elem(\"%s\") → content ok, next=NULL\n", input);
     } else {
         printf("❌ FAIL: ft_create_elem(\"%s\") → content=%p (expected %p), next=%p (expected NULL)\n",
-               input, node->content, input, node->next);
+               input, node->data, input, node->next);
     }
 
     free(node); // cleanup

@@ -25,6 +25,6 @@ ft_stdup:
 
 .error:
 	call __errno_location
-	mov dword [eax], 12; ENOMEM (12)
+	mov dword [rax], 12; ENOMEM (12)
 	mov rax,0
 	ret

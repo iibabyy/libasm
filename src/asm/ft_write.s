@@ -26,6 +26,6 @@ ft_write:
 	mov rdi, rax
 
 	call r10
-	mov [rax], edi
+	mov dword [rax], edi
 	mov rax, -1
 	ret

@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 typedef struct s_list {
-    void            *content;
+    void            *data;
     struct s_list   *next;
 }   t_list;
 
@@ -106,7 +106,7 @@ void check_list_remove_if() {
     t_list *tmp;
     while (list) {
         tmp = list->next;
-        free(list->content);
+        free(list->data);
         free(list);
         list = tmp;
     }
@@ -146,7 +146,7 @@ void check_remove_lowest() {
     t_list *tmp;
     while (list) {
         tmp = list->next;
-        free(list->content);
+        free(list->data);
         free(list);
         list = tmp;
     }
@@ -181,7 +181,7 @@ void check_list_sort() {
     t_list *tmp;
     while (list) {
         tmp = list->next;
-        free(list->content);
+        free(list->data);
         free(list);
         list = tmp;
     }
@@ -196,7 +196,7 @@ void check_list_sort() {
     // Cleanup
     while (list) {
         tmp = list->next;
-        free(list->content);
+        free(list->data);
         free(list);
         list = tmp;
     }
@@ -211,7 +211,7 @@ void check_list_sort() {
     // Cleanup
     while (list) {
         tmp = list->next;
-        free(list->content);
+        free(list->data);
         free(list);
         list = tmp;
     }
@@ -355,7 +355,7 @@ void check_list_size() {
     t_list *tmp;
     while (big_list) {
         tmp = big_list->next;
-        free(big_list->content);
+        free(big_list->data);
         free(big_list);
         big_list = tmp;
     }

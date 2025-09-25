@@ -1,5 +1,5 @@
 struc t_list
-	.content:	resb 8
+	.data:	resb 8
 	.next:		resb 8
 endstruc
 
@@ -70,7 +70,7 @@ ft_list_remove_if.loop:
 
 	mov rdi, qword [rbp -32]
 	mov rsi, qword [rbp -40]
-	mov rsi, qword [rsi + t_list.content]
+	mov rsi, qword [rsi + t_list.data]
 	mov r8, qword [rbp -16]
 	call r8
 
@@ -92,7 +92,7 @@ ft_list_remove_if.loop.delete:
 
 	jmp_if_null qword [rbp -24], ft_list_remove_if.loop
 
-	mov rdi, qword [rax + t_list.content]
+	mov rdi, qword [rax + t_list.data]
 	call qword [rbp -24]
 
 	jmp ft_list_remove_if.loop

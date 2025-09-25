@@ -1,7 +1,8 @@
 extern malloc
+extern __errno_location
 
 struc t_list
-	.content:	resb 8
+	.data:	resb 8
 	.next:		resb 8
 endstruc
 
@@ -17,10 +18,15 @@ ft_create_elem:
 	call r9
 	pop rdi
 	cmp rax, 0
-	je ft_create_elem.end
+	je ft_create_elem.malloc_failed
 
 	; mov r8, rdi
-	mov qword [rax + t_list.content], rdi
+	mov qword [rax + t_list.data], rdi
 	mov qword [rax + t_list.next], 0
+	jmp ft_create_elem.end
+ft_create_elem.malloc_failed:
+	mov r9, __errno_location 
+	call r9
+	mov dword [rax], 12; ENOMEM (12)
 ft_create_elem.end:
 	ret

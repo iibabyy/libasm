@@ -1,5 +1,5 @@
 struc t_list
-	.content:	resb 8
+	.data:	resb 8
 	.next:		resb 8
 endstruc
 
