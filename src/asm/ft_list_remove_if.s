@@ -54,7 +54,7 @@ ft_list_remove_if:
 	add r8, 8; [rbp -16] = int (*cmp)()
 	add r8, 8; [rbp -24] = void (*free_fct)(void *)
 	add r8, 8; [rbp -32] = void *to_compare_to
-	add r8, 8; [rbp -40] = void *current_node
+	add r8, 8; [rbp -40] = t_list *current_node
 	allocate_stack_frame r8
 
 	mov qword [rbp -8], rdi;	begin
@@ -62,12 +62,15 @@ ft_list_remove_if:
 	mov qword [rbp -24], rcx;	free_ctf()
 	mov qword [rbp -32], rsi;	to_compare_to
 
-	mov r8, [rbp - 8]; begin
-	mov r8, [r8]; *begin
+	mov r8, qword [rbp - 8]; begin
+	mov r8, qword [r8]; *begin
 	mov qword [rbp -40], r8; current_node
 ft_list_remove_if.loop:
+	jmp_if_null qword [rbp -40], ft_list_remove_if.end
+
 	mov rdi, qword [rbp -32]
 	mov rsi, qword [rbp -40]
+	mov rsi, qword [rsi + t_list.content]
 	mov r8, qword [rbp -16]
 	call r8
 
@@ -96,7 +99,5 @@ ft_list_remove_if.loop.delete:
 
 ft_list_remove_if.end:
 	free_stack_frame
-	ret
-
 ft_list_remove_if.error:
 	ret

@@ -83,6 +83,7 @@ void check_list_remove_if() {
     test_list_remove_if("Empty list", &list, "apple");
 
     // Test 2: single element (match)
+    list = NULL;
     ft_list_push_front(&list, strdup("apple"));
     test_list_remove_if("Single element list (match)", &list, "apple");
 
@@ -90,6 +91,7 @@ void check_list_remove_if() {
     ft_list_push_front(&list, strdup("banana"));
     test_list_remove_if("Single element list (no match)", &list, "apple");
 
+    list = NULL;
     // Test 4: multiple elements with matches
     const char *values[] = {"apple", "banana", "apple", "cherry", "apple"};
     for (int i = 0; i < 5; i++) {
@@ -127,7 +129,7 @@ void check_remove_lowest() {
     // Test 3: multiple elements
     list = NULL;
     const char *values[] = {"orange", "banana", "apple", "grape", "cherry"};
-    for (int i = 4; i >= 0; i--) {
+    for (int i = 0; i < 5; i++) {
         ft_list_push_front(&list, strdup(values[i]));
     }
     test_remove_lowest("Multiple elements (expect apple removed)", &list);
